@@ -71,23 +71,29 @@
 			let camera, scene, renderer;
 			let controls, water, sun, mesh;
             
-            ///From misc_controls_pointerlock
-            import { PointerLockControls } from './jsm/controls/PointerLockControls.js';
+            let camY = 10;
             
-            const objects = [];
+            ///From misc_controls_pointerlock
+                import { PointerLockControls } from './jsm/controls/PointerLockControls.js';
 
-			let raycaster;
+                const objects = [];
 
-			let moveForward = false;
-			let moveBackward = false;
-			let moveLeft = false;
-			let moveRight = false;
-			let canJump = false;
+                let raycaster;
 
-			let prevTime = performance.now();
-			const velocity = new THREE.Vector3();
-			const direction = new THREE.Vector3();
+                let moveForward = false;
+                let moveBackward = false;
+                let moveLeft = false;
+                let moveRight = false;
+                let canJump = false;
+
+                let prevTime = performance.now();
+                const velocity = new THREE.Vector3();
+                const direction = new THREE.Vector3();
             ///End 
+            
+            const NEAR = 1e-6, FAR = 1e27; //from logarithmic depth buffer
+            const start = Date.now();
+            
 
 			init();
 			animate();
@@ -98,11 +104,11 @@
 
 				//
 
-				renderer = new THREE.WebGLRenderer();
+				renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true}); //from ocean
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				renderer.toneMapping = THREE.ACESFilmicToneMapping;
-				//container.appendChild( renderer.domElement ); //OG
+				//container.appendChild( renderer.domElement ); //from ocean
                 document.body.appendChild( renderer.domElement ); //From misc controls
 
 				//
@@ -110,9 +116,15 @@
 				scene = new THREE.Scene();
                 //scene.fog = new THREE.Fog( 0xffffff, 0, 750 );//from misc controls pointerlock
 
-				camera = new THREE.PerspectiveCamera( 55, window.innerWidth / window.innerHeight, 1, 20000 );
-				camera.position.y = 10;
+				
+                
+                camera = new THREE.PerspectiveCamera( 55, window.innerWidth / window.innerHeight, NEAR, 1000 );
+				camera.position.y = camY;
                 camera.position.x = 5000;
+                
+                
+                
+                
 
 				
                 //FROM misc controls pinterlock
@@ -217,7 +229,7 @@
 
 				// Water
 
-				const waterGeometry = new THREE.PlaneGeometry( 1000000, 1000000 );
+				const waterGeometry = new THREE.PlaneGeometry( 1100000, 1100000 );
 
 				water = new Water(
 					waterGeometry,
@@ -243,8 +255,8 @@
 
 				// Skybox
 
-				const sky = new Sky();
-				sky.scale.setScalar( 1000000 );
+				const sky = new Sky({depthWrite: false});
+				sky.scale.setScalar( 6248579.3 );
 				scene.add( sky );
 
 				const skyUniforms = sky.material.uniforms;
@@ -306,7 +318,7 @@
 				const gui = new GUI();
 
 				const folderSky = gui.addFolder( 'Sky' );
-				folderSky.add( parameters, 'elevation', 0, 90, 0.1 ).onChange( updateSun );
+				folderSky.add( parameters, 'elevation', 0, 360, 0.01 ).onChange( updateSun );
 				folderSky.add( parameters, 'azimuth', - 180, 180, 0.1 ).onChange( updateSun );
 				folderSky.open();
 
@@ -339,11 +351,13 @@
                 const time = performance.now();
                 
                 
+                
                 //From Misc Controls Pointerlock
                    if ( controls.isLocked === true ) {
 
 					raycaster.ray.origin.copy( controls.getObject().position );
-					raycaster.ray.origin.y -= 10;
+					raycaster.ray.origin.y -= camY;
+					raycaster.ray.origin.y -= camY;
 
 					const intersections = raycaster.intersectObjects( objects, false );
 
@@ -375,10 +389,10 @@
 
 					controls.getObject().position.y += ( velocity.y * delta ); // new behavior
 
-					if ( controls.getObject().position.y < 10 ) {
+					if ( controls.getObject().position.y < camY ) {
 
 						velocity.y = 0;
-						controls.getObject().position.y = 10;
+						controls.getObject().position.y = camY;
 
 						canJump = true;
 
@@ -403,6 +417,15 @@
 				mesh.rotation.z = time * 0.51;
 
 				water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
+                
+               
+               const millis = Date.now() - start;
+               const travel = millis * -.015;
+               //console.log(travel);
+                
+                
+                
+                camera.position.set(camera.position.x, camera.position.y, travel);
                 
 				renderer.render( scene, camera );
 

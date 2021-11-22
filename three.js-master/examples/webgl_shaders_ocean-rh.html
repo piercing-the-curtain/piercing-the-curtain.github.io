@@ -338,13 +338,13 @@
                     console.log("Current Sun Az = " + currentSunAz); // testing
                     console.log(timeSecTot); //testing
   
-                    //From Original Ocean Sliders toggle with below for testing
-                    const phi = THREE.MathUtils.degToRad( 90 - parameters.elevation );
-					const theta = THREE.MathUtils.degToRad( parameters.azimuth );
+//                    //From Original Ocean Sliders toggle with below for testing
+//                    const phi = THREE.MathUtils.degToRad( 90 - parameters.elevation );
+//					const theta = THREE.MathUtils.degToRad( parameters.azimuth );
 
-//                    //Current Sun Data toggle with above for testing
-//                    const phi = THREE.MathUtils.degToRad(currentSunPos);
-//					const theta = THREE.MathUtils.degToRad(currentSunAz);
+                    //Current Sun Data toggle with above for testing
+                    const phi = THREE.MathUtils.degToRad(currentSunPos);
+					const theta = THREE.MathUtils.degToRad(currentSunAz);
                     
 					sun.setFromSphericalCoords( 1, phi, theta );
 

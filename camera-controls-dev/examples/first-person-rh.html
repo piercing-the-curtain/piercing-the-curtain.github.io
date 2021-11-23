@@ -68,7 +68,7 @@ cameraControls.azimuthRotateSpeed = - 0.3; // negative value to invert rotation 
 cameraControls.polarRotateSpeed   = - 0.3; // negative value to invert rotation direction
 cameraControls.truckSpeed = 10;
 cameraControls.mouseButtons.wheel = CameraControls.ACTION.ZOOM;
-cameraControls.touches.two = CameraControls.ACTION.TOUCH_ZOOM_TRUCK;
+//cameraControls.touches.two = CameraControls.ACTION.TOUCH_ZOOM_TRUCK;
 cameraControls.saveState();
 
 const mesh = new THREE.Mesh(
@@ -103,24 +103,24 @@ renderer.render( scene, camera );
 } )();
 
 
-mesh.geometry.computeBoundingBox();
-const meshBBSize = mesh.geometry.boundingBox.getSize( new THREE.Vector3() );
-const meshBBWidth  = meshBBSize.x;
-const meshBBHeight = meshBBSize.y;
-const meshBBDepth  = meshBBSize.z;
+//mesh.geometry.computeBoundingBox();
+//const meshBBSize = mesh.geometry.boundingBox.getSize( new THREE.Vector3() );
+//const meshBBWidth  = meshBBSize.x;
+//const meshBBHeight = meshBBSize.y;
+//const meshBBDepth  = meshBBSize.z;
 
-function customFitTo() {
-
-	const distanceToFit = cameraControls.getDistanceToFit( meshBBWidth, meshBBHeight, meshBBDepth );
-	cameraControls.moveTo(
-		mesh.position.x,
-		mesh.position.y,
-		mesh.position.z + distanceToFit,
-		true
-	);
-	cameraControls.rotateTo( 0, 90 * THREE.MathUtils.DEG2RAD, true );
-
-}
+//function customFitTo() {
+//
+////	const distanceToFit = cameraControls.getDistanceToFit( meshBBWidth, meshBBHeight, meshBBDepth );
+////	cameraControls.moveTo(
+////		mesh.position.x,
+////		mesh.position.y,
+////		mesh.position.z + distanceToFit,
+////		true
+////	);
+////	cameraControls.rotateTo( 0, 90 * THREE.MathUtils.DEG2RAD, true );
+//
+//}
 </script>
 
 </body>

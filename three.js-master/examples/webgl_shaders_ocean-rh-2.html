@@ -77,23 +77,39 @@
                 camera.position.x = 0;
                 camera.position.z = 0;
                 
+                
+                
+                				
 
-				// controls
-
+                //OG from Ocean
 				controls = new OrbitControls( camera, renderer.domElement );
-//				controls.listenToKeyEvents( window ); // optional
+				controls.maxPolarAngle = Math.PI * 0.495;
+				//controls.target.set( 0, 10, -1000 );
+				controls.minDistance = 40.0;
+				controls.maxDistance = 200.0;
+				controls.update();
 
-				//controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
+				
+                
 
-				controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
-				controls.dampingFactor = 0.05;
-
-				controls.screenSpacePanning = true;
-
-				controls.minDistance = 20;
-				controls.maxDistance = 20;
-
-				controls.maxPolarAngle = Math.PI / 2;
+//				// controls from Orbit Example
+//
+//				controls = new OrbitControls( camera, renderer.domElement );
+////				controls.listenToKeyEvents( window ); // optional
+//
+//				//controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
+//
+//				controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+//				controls.dampingFactor = 0.05;
+//
+//				controls.screenSpacePanning = true;
+//
+//				controls.minDistance = 20;
+//				controls.maxDistance = 20;
+//
+//				controls.maxPolarAngle = Math.PI / 2;
+//                // End
+                
 
 				sun = new THREE.Vector3();
 
@@ -227,17 +243,6 @@
 				mesh = new THREE.Mesh( geometry, material );
 				scene.add( mesh );
 
-				//
-
-//                //OG from Ocean
-//				controls = new OrbitControls( camera, renderer.domElement );
-//				controls.maxPolarAngle = Math.PI * 0.495;
-//				controls.target.set( 0, 10, 0 );
-//				controls.minDistance = 40.0;
-//				controls.maxDistance = 200.0;
-//				controls.update();
-
-				//
 
 				stats = new Stats();
 				container.appendChild( stats.dom );
@@ -276,7 +281,7 @@
 			function animate() {
 
 				requestAnimationFrame( animate );
-                controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
+                //controls.update(); // From Orbit Controls Example only required if controls.enableDamping = true, or if controls.autoRotate = true
 				render();
 				stats.update();
 

@@ -131,6 +131,61 @@
 
 				const pmremGenerator = new THREE.PMREMGenerator( renderer );
 
+                
+				function updateSun() {
+
+                    //Figure out current time to use in Sun Calc
+                    const today = new Date();
+                    //var timeNow = today.getHours() + ":" + today.getMinutes();
+                    //console.log(timeNow);
+                    const timeHour = today.getHours(); 
+                    const timeMin = today.getMinutes();
+                    const timeH2S = timeHour * 60 * 60
+                    const timeM2S = timeMin * 60
+                    const timeSecTot = timeH2S + timeM2S; //current time in minutes since midnight
+                    let timeSecTotPos = timeSecTot;
+                    
+                    
+                    //If before noon add, if after noon subtract
+                    if (timeSecTot > secNoon ){
+                       timeSecTotPos = (secNoon) + (secNoon) - timeSecTot; 
+                    } 
+                    
+                    
+                    const currentSunPos = 90 + scaleTimePos(timeSecTotPos, secMin, secNoon, eLmin, eLmax);//set map to scale minutes to degrees
+                    
+                    //Scale the current time in minutes since midnight to position of sun in degrees 
+                    function scaleTimePos (number, inMin, inMax, outMin, outMax) {
+                        return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+                    }
+                    
+                    const currentSunAz = scaleTimeAz(timeSecTot, secMin, secMax, aZmin, aZmax);//set map to scale minutes to degrees
+                    
+                    //Scale the current time in minutes since midnight to position of sun in degrees 
+                    function scaleTimeAz (number, inMin, inMax, outMin, outMax) {
+                        return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+                    }
+                    
+                    console.log("Current Sun Elevation = " + currentSunPos); // testing
+                    console.log("Current Sun Az = " + currentSunAz); // testing
+                    console.log(timeSecTot); //testing
+  
+//                    //From Original Ocean Sliders toggle with below for testing
+//                    const phi = THREE.MathUtils.degToRad( 90 - parameters.elevation );
+//					const theta = THREE.MathUtils.degToRad( parameters.azimuth );
+
+                    //Current Sun Data toggle with above for testing
+                    const phi = THREE.MathUtils.degToRad(currentSunPos);
+					const theta = THREE.MathUtils.degToRad(currentSunAz);
+                    
+					sun.setFromSphericalCoords( 1, phi, theta );
+
+					sky.material.uniforms[ 'sunPosition' ].value.copy( sun );
+					water.material.uniforms[ 'sunDirection' ].value.copy( sun ).normalize();
+
+					scene.environment = pmremGenerator.fromScene( sky ).texture;
+
+				}
 
 				updateSun();
     
@@ -180,61 +235,6 @@
 				renderer.setSize( window.innerWidth, window.innerHeight );
 
 			}
-            
-            function updateSun() {
-
-                //Figure out current time to use in Sun Calc
-                const today = new Date();
-                //var timeNow = today.getHours() + ":" + today.getMinutes();
-                //console.log(timeNow);
-                const timeHour = today.getHours(); 
-                const timeMin = today.getMinutes();
-                const timeH2S = timeHour * 60 * 60
-                const timeM2S = timeMin * 60
-                const timeSecTot = timeH2S + timeM2S; //current time in minutes since midnight
-                let timeSecTotPos = timeSecTot;
-
-
-                //If before noon add, if after noon subtract
-                if (timeSecTot > secNoon ){
-                   timeSecTotPos = (secNoon) + (secNoon) - timeSecTot; 
-                } 
-
-
-                const currentSunPos = 90 + scaleTimePos(timeSecTotPos, secMin, secNoon, eLmin, eLmax);//set map to scale minutes to degrees
-
-                //Scale the current time in minutes since midnight to position of sun in degrees 
-                function scaleTimePos (number, inMin, inMax, outMin, outMax) {
-                    return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
-                }
-
-                const currentSunAz = scaleTimeAz(timeSecTot, secMin, secMax, aZmin, aZmax);//set map to scale minutes to degrees
-
-                //Scale the current time in minutes since midnight to position of sun in degrees 
-                function scaleTimeAz (number, inMin, inMax, outMin, outMax) {
-                    return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
-                }
-
-                console.log("Current Sun Elevation = " + currentSunPos); // testing
-                console.log("Current Sun Az = " + currentSunAz); // testing
-                console.log(timeSecTot); //testing
-
-//                    //From Original Ocean Sliders toggle with below for testing
-//                    const phi = THREE.MathUtils.degToRad( 90 - parameters.elevation );
-//					const theta = THREE.MathUtils.degToRad( parameters.azimuth );
-
-                //Current Sun Data toggle with above for testing
-                const phi = THREE.MathUtils.degToRad(currentSunPos);
-                const theta = THREE.MathUtils.degToRad(currentSunAz);
-
-                sun.setFromSphericalCoords( 1, phi, theta );
-
-                sky.material.uniforms[ 'sunPosition' ].value.copy( sun );
-                water.material.uniforms[ 'sunDirection' ].value.copy( sun ).normalize();
-
-                scene.environment = pmremGenerator.fromScene( sky ).texture;
-
-            }
 
 			function animate() {
 

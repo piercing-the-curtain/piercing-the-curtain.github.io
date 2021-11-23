@@ -57,7 +57,13 @@
 		</div>
         
 
-		<script type="module">
+        <script> 
+            if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+                window.location = "https://piercing-the-curtain.github.io/three.js-master/examples/webgl_shaders_ocean-rh-mobile.html"; 
+            }
+        </script>
+        
+        <script type="module">
 
 			import * as THREE from '../build/three.module.js';
 
@@ -119,196 +125,199 @@
             
             
             //MOBIILE
-            if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+//            if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
                  // some code..
                 
-                function init() {
-                container = document.getElementById( 'container' );
-
-				//
-
-				renderer = new THREE.WebGLRenderer();
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				renderer.toneMapping = THREE.ACESFilmicToneMapping;
-				container.appendChild( renderer.domElement );
-
-				//
-
-				scene = new THREE.Scene();
-
-                //OG from Ocean
-				camera = new THREE.PerspectiveCamera( 55, window.innerWidth / window.innerHeight, NEAR, FAR );
-				//camera.position.set( 30, 30, 100 );
-                camera.position.y = camY;
-                camera.position.x = 0;
-                camera.position.z = 0;
-                
-                
-
-				sun = new THREE.Vector3();
-
-				// Water
-
-				const waterGeometry = new THREE.PlaneGeometry( 10000, 10000 );
-
-				water = new Water(
-					waterGeometry,
-					{
-						textureWidth: 512,
-						textureHeight: 512,
-						waterNormals: new THREE.TextureLoader().load( 'textures/waternormals.jpg', function ( texture ) {
-
-							texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-
-						} ),
-						sunDirection: new THREE.Vector3(),
-						sunColor: 0xffffff,
-						waterColor: 0x001e0f,
-						distortionScale: 3.7,
-						fog: scene.fog !== undefined
-					}
-				);
-
-				water.rotation.x = - Math.PI / 2;
-
-				scene.add( water );
-
-				// Skybox
-
-				const sky = new Sky();
-				sky.scale.setScalar( 10000 );
-				scene.add( sky );
-
-				const skyUniforms = sky.material.uniforms;
-
-				skyUniforms[ 'turbidity' ].value = 10;
-				skyUniforms[ 'rayleigh' ].value = 2;
-				skyUniforms[ 'mieCoefficient' ].value = 0.005;
-				skyUniforms[ 'mieDirectionalG' ].value = 0.8;
-
-				const parameters = {
-					elevation: 2,
-					azimuth: 180
-				};
-
-				const pmremGenerator = new THREE.PMREMGenerator( renderer );
 
                 
-				function updateSun() {
-
-                    //Figure out current time to use in Sun Calc
-                    const today = new Date();
-                    //var timeNow = today.getHours() + ":" + today.getMinutes();
-                    //console.log(timeNow);
-                    const timeHour = today.getHours(); 
-                    const timeMin = today.getMinutes();
-                    const timeH2S = timeHour * 60 * 60
-                    const timeM2S = timeMin * 60
-                    const timeSecTot = timeH2S + timeM2S; //current time in minutes since midnight
-                    let timeSecTotPos = timeSecTot;
-                    
-                    
-                    //If before noon add, if after noon subtract
-                    if (timeSecTot > secNoon ){
-                       timeSecTotPos = (secNoon) + (secNoon) - timeSecTot; 
-                    } 
-                    
-                    
-                    const currentSunPos = 90 + scaleTimePos(timeSecTotPos, secMin, secNoon, eLmin, eLmax);//set map to scale minutes to degrees
-                    
-                    //Scale the current time in minutes since midnight to position of sun in degrees 
-                    function scaleTimePos (number, inMin, inMax, outMin, outMax) {
-                        return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
-                    }
-                    
-                    const currentSunAz = scaleTimeAz(timeSecTot, secMin, secMax, aZmin, aZmax);//set map to scale minutes to degrees
-                    
-                    //Scale the current time in minutes since midnight to position of sun in degrees 
-                    function scaleTimeAz (number, inMin, inMax, outMin, outMax) {
-                        return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
-                    }
-                    
-                    console.log("Current Sun Elevation = " + currentSunPos); // testing
-                    console.log("Current Sun Az = " + currentSunAz); // testing
-                    console.log(timeSecTot); //testing
-  
-//                    //From Original Ocean Sliders toggle with below for testing
-//                    const phi = THREE.MathUtils.degToRad( 90 - parameters.elevation );
-//					const theta = THREE.MathUtils.degToRad( parameters.azimuth );
-
-                    //Current Sun Data toggle with above for testing
-                    const phi = THREE.MathUtils.degToRad(currentSunPos);
-					const theta = THREE.MathUtils.degToRad(currentSunAz);
-                    
-					sun.setFromSphericalCoords( 1, phi, theta );
-
-					sky.material.uniforms[ 'sunPosition' ].value.copy( sun );
-					water.material.uniforms[ 'sunDirection' ].value.copy( sun ).normalize();
-
-					scene.environment = pmremGenerator.fromScene( sky ).texture;
-
-				}
-
-				updateSun();
-    
-                setInterval(function(){
-                    updateSun()
-                }, 1000)
-
-				//
-
-				const geometry = new THREE.BoxGeometry( 30, 30, 30 );
-				const material = new THREE.MeshStandardMaterial( { roughness: 0 } );
-
-				mesh = new THREE.Mesh( geometry, material );
-				scene.add( mesh );
-
-
-				stats = new Stats();
-				container.appendChild( stats.dom );
-
-				// GUI
-
-				const gui = new GUI();
-
-				const folderSky = gui.addFolder( 'Sky' );
-				folderSky.add( parameters, 'elevation', 0, 90, 0.1 ).onChange( updateSun );
-				folderSky.add( parameters, 'azimuth', - 180, 180, 0.1 ).onChange( updateSun );
-				folderSky.open();
-
-				const waterUniforms = water.material.uniforms;
-
-				const folderWater = gui.addFolder( 'Water' );
-				folderWater.add( waterUniforms.distortionScale, 'value', 0, 8, 0.1 ).name( 'distortionScale' );
-				folderWater.add( waterUniforms.size, 'value', 0.1, 10, 0.1 ).name( 'size' );
-				folderWater.open();
-
-				//
-
-				window.addEventListener( 'resize', onWindowResize );
-
-			}
-
-			function onWindowResize() {
-
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
-
-				renderer.setSize( window.innerWidth, window.innerHeight );
-
-			}
-
-			function animate() {
-
-                
-                requestAnimationFrame( animate );
-                //controls.update(); // From Orbit Controls Example only required if controls.enableDamping = true, or if controls.autoRotate = true
-				render();
-				stats.update();
-
-			}
-                } else{
+//                function init() {
+//                container = document.getElementById( 'container' );
+//
+//				//
+//
+//				renderer = new THREE.WebGLRenderer();
+//				renderer.setPixelRatio( window.devicePixelRatio );
+//				renderer.setSize( window.innerWidth, window.innerHeight );
+//				renderer.toneMapping = THREE.ACESFilmicToneMapping;
+//				container.appendChild( renderer.domElement );
+//
+//				//
+//
+//				scene = new THREE.Scene();
+//
+//                //OG from Ocean
+//				camera = new THREE.PerspectiveCamera( 55, window.innerWidth / window.innerHeight, NEAR, FAR );
+//				//camera.position.set( 30, 30, 100 );
+//                camera.position.y = camY;
+//                camera.position.x = 0;
+//                camera.position.z = 0;
+//                
+//                
+//
+//				sun = new THREE.Vector3();
+//
+//				// Water
+//
+//				const waterGeometry = new THREE.PlaneGeometry( 10000, 10000 );
+//
+//				water = new Water(
+//					waterGeometry,
+//					{
+//						textureWidth: 512,
+//						textureHeight: 512,
+//						waterNormals: new THREE.TextureLoader().load( 'textures/waternormals.jpg', function ( texture ) {
+//
+//							texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+//
+//						} ),
+//						sunDirection: new THREE.Vector3(),
+//						sunColor: 0xffffff,
+//						waterColor: 0x001e0f,
+//						distortionScale: 3.7,
+//						fog: scene.fog !== undefined
+//					}
+//				);
+//
+//				water.rotation.x = - Math.PI / 2;
+//
+//				scene.add( water );
+//
+//				// Skybox
+//
+//				const sky = new Sky();
+//				sky.scale.setScalar( 10000 );
+//				scene.add( sky );
+//
+//				const skyUniforms = sky.material.uniforms;
+//
+//				skyUniforms[ 'turbidity' ].value = 10;
+//				skyUniforms[ 'rayleigh' ].value = 2;
+//				skyUniforms[ 'mieCoefficient' ].value = 0.005;
+//				skyUniforms[ 'mieDirectionalG' ].value = 0.8;
+//
+//				const parameters = {
+//					elevation: 2,
+//					azimuth: 180
+//				};
+//
+//				const pmremGenerator = new THREE.PMREMGenerator( renderer );
+//
+//                
+//				function updateSun() {
+//
+//                    //Figure out current time to use in Sun Calc
+//                    const today = new Date();
+//                    //var timeNow = today.getHours() + ":" + today.getMinutes();
+//                    //console.log(timeNow);
+//                    const timeHour = today.getHours(); 
+//                    const timeMin = today.getMinutes();
+//                    const timeH2S = timeHour * 60 * 60
+//                    const timeM2S = timeMin * 60
+//                    const timeSecTot = timeH2S + timeM2S; //current time in minutes since midnight
+//                    let timeSecTotPos = timeSecTot;
+//                    
+//                    
+//                    //If before noon add, if after noon subtract
+//                    if (timeSecTot > secNoon ){
+//                       timeSecTotPos = (secNoon) + (secNoon) - timeSecTot; 
+//                    } 
+//                    
+//                    
+//                    const currentSunPos = 90 + scaleTimePos(timeSecTotPos, secMin, secNoon, eLmin, eLmax);//set map to scale minutes to degrees
+//                    
+//                    //Scale the current time in minutes since midnight to position of sun in degrees 
+//                    function scaleTimePos (number, inMin, inMax, outMin, outMax) {
+//                        return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+//                    }
+//                    
+//                    const currentSunAz = scaleTimeAz(timeSecTot, secMin, secMax, aZmin, aZmax);//set map to scale minutes to degrees
+//                    
+//                    //Scale the current time in minutes since midnight to position of sun in degrees 
+//                    function scaleTimeAz (number, inMin, inMax, outMin, outMax) {
+//                        return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+//                    }
+//                    
+//                    console.log("Current Sun Elevation = " + currentSunPos); // testing
+//                    console.log("Current Sun Az = " + currentSunAz); // testing
+//                    console.log(timeSecTot); //testing
+//  
+////                    //From Original Ocean Sliders toggle with below for testing
+////                    const phi = THREE.MathUtils.degToRad( 90 - parameters.elevation );
+////					const theta = THREE.MathUtils.degToRad( parameters.azimuth );
+//
+//                    //Current Sun Data toggle with above for testing
+//                    const phi = THREE.MathUtils.degToRad(currentSunPos);
+//					const theta = THREE.MathUtils.degToRad(currentSunAz);
+//                    
+//					sun.setFromSphericalCoords( 1, phi, theta );
+//
+//					sky.material.uniforms[ 'sunPosition' ].value.copy( sun );
+//					water.material.uniforms[ 'sunDirection' ].value.copy( sun ).normalize();
+//
+//					scene.environment = pmremGenerator.fromScene( sky ).texture;
+//
+//				}
+//
+//				updateSun();
+//    
+//                setInterval(function(){
+//                    updateSun()
+//                }, 1000)
+//
+//				//
+//
+//				const geometry = new THREE.BoxGeometry( 30, 30, 30 );
+//				const material = new THREE.MeshStandardMaterial( { roughness: 0 } );
+//
+//				mesh = new THREE.Mesh( geometry, material );
+//				scene.add( mesh );
+//
+//
+//				stats = new Stats();
+//				container.appendChild( stats.dom );
+//
+//				// GUI
+//
+//				const gui = new GUI();
+//
+//				const folderSky = gui.addFolder( 'Sky' );
+//				folderSky.add( parameters, 'elevation', 0, 90, 0.1 ).onChange( updateSun );
+//				folderSky.add( parameters, 'azimuth', - 180, 180, 0.1 ).onChange( updateSun );
+//				folderSky.open();
+//
+//				const waterUniforms = water.material.uniforms;
+//
+//				const folderWater = gui.addFolder( 'Water' );
+//				folderWater.add( waterUniforms.distortionScale, 'value', 0, 8, 0.1 ).name( 'distortionScale' );
+//				folderWater.add( waterUniforms.size, 'value', 0.1, 10, 0.1 ).name( 'size' );
+//				folderWater.open();
+//
+//				//
+//
+//				window.addEventListener( 'resize', onWindowResize );
+//
+//			}
+//
+//			function onWindowResize() {
+//
+//				camera.aspect = window.innerWidth / window.innerHeight;
+//				camera.updateProjectionMatrix();
+//
+//				renderer.setSize( window.innerWidth, window.innerHeight );
+//
+//			}
+//
+//			function animate() {
+//
+//                
+//                requestAnimationFrame( animate );
+//                //controls.update(); // From Orbit Controls Example only required if controls.enableDamping = true, or if controls.autoRotate = true
+//				render();
+//				stats.update();
+//
+//			}
+               // } //end if
+                //else{
                       
 
 			init();
@@ -672,7 +681,7 @@
 
 			}
             
-        }//end else
+       // }//end else
 			
             function render() {
 

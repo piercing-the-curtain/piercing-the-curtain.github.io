@@ -121,10 +121,9 @@
                 const direction = new THREE.Vector3();
             ///End 
             
-            const NEAR = .01, FAR = scaleWater; //from logarithmic depth buffer
-            const start = Date.now();
+            const NEAR = 1e-6, FAR = 1e27; //from logarithmic depth buffer
             
-            //
+            const start = Date.now();
             //const startTime = new Date("December 1, 2021 12:00:00").getTime(); //1638388800000
             //const startTime = new Date("December 1, 2021 12:00:00").getTime(); //1638388800000
             const startTime = new Date().getTime(); //1637543555185

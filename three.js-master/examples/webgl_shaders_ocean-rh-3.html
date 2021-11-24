@@ -93,7 +93,9 @@
             let aZmax = 322.40;
             
             const milliSecSf2Lus = 6733439971.2;
-            const milliSecPass = 6733439971.2;
+            const milliSecPass = 6733439971.2/2;
+            
+            const scaleWater = 1000000;
             
             
 
@@ -119,8 +121,10 @@
                 const direction = new THREE.Vector3();
             ///End 
             
-            const NEAR = 1e-6, FAR = 1e27; //from logarithmic depth buffer
+            const NEAR = .01, FAR = scaleWater; //from logarithmic depth buffer
             const start = Date.now();
+            
+            //
             //const startTime = new Date("December 1, 2021 12:00:00").getTime(); //1638388800000
             //const startTime = new Date("December 1, 2021 12:00:00").getTime(); //1638388800000
             const startTime = new Date().getTime(); //1637543555185
@@ -265,7 +269,7 @@
 
 				// Water
 
-				const waterGeometry = new THREE.PlaneGeometry( 1000000, 1000000 );
+				const waterGeometry = new THREE.PlaneGeometry( scaleWater, scaleWater );
 
 				water = new Water(
 					waterGeometry,
@@ -292,7 +296,7 @@
 				// Skybox
 
 				const sky = new Sky({depthWrite: false});
-				sky.scale.setScalar( 1000000 );
+				sky.scale.setScalar( scaleWater );
 				scene.add( sky );
 
 				const skyUniforms = sky.material.uniforms;
@@ -313,6 +317,8 @@
 
                     //Figure out current time to use in Sun Calc
                     var today = new Date();
+                    //var today = new Date("November 24, 2021 16:45:00"); //1638388800000
+                    //const startTime = new Date("December 1, 2021 12:00:00").getTime(); //1638388800000
                     var timeHour = today.getHours(); 
                     var timeMin = today.getMinutes();
                     var timeSec = today.getSeconds();

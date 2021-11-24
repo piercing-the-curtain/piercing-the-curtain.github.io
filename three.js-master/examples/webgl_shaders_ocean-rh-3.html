@@ -82,8 +82,8 @@
             
             let camY = 10;
 
-            let eLmin = -59; 
-            let eLmax = 59;
+            let eLmin = -50; 
+            let eLmax = 30;
             
             let secMin =  1;
             let secMax = 86400;
@@ -328,7 +328,7 @@
                     } else {timeSecTotPos = timeSecTot;}
                     
                     
-                   var currentSunPos =  scaleTimePos(timeSecTotPos, secMin, secMax, eLmin, eLmax);//set map to scale minutes to degrees
+                   var currentSunPos =  scaleTimePos(timeSecTotPos, secMin, secNoon, eLmin, eLmax);//set map to scale minutes to degrees
                     
                     //Scale the current time in minutes since midnight to position of sun in degrees 
                     function scaleTimePos (number, inMin, inMax, outMin, outMax) {

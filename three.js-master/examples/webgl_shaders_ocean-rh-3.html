@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js webgl - shaders - ocean</title>
+		<title>All Already</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<link type="text/css" rel="stylesheet" href="../examples/main.css">
@@ -9,7 +9,8 @@
 <!--        From Misc controls Pointerlock-->
         <style>
 			#blocker {
-				position: absolute;
+				font-family: sans-serif;
+                position: absolute;
 				width: 100%;
 				height: 100%;
 				background-color: rgba(0,0,0,0.5);
@@ -53,9 +54,11 @@
 <!--        End-->
 
 		<div id="container"></div>
+<!--
 		<div id="info">
 			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - webgl ocean
 		</div>
+-->
         
 
         <script> 
@@ -402,19 +405,19 @@
 
 				// GUI
 
-				const gui = new GUI();
-
-				const folderSky = gui.addFolder( 'Sky' );
-				folderSky.add( parameters, 'elevation', -90, 90, 0.1 ).onChange( updateSun );
-				folderSky.add( parameters, 'azimuth', 0, 360, 0.1 ).onChange( updateSun );
-				folderSky.open();
-
-				const waterUniforms = water.material.uniforms;
-
-				const folderWater = gui.addFolder( 'Water' );
-				folderWater.add( waterUniforms.distortionScale, 'value', 0, 8, 0.1 ).name( 'distortionScale' );
-				folderWater.add( waterUniforms.size, 'value', 0.1, 10, 0.1 ).name( 'size' );
-				folderWater.open();
+//				const gui = new GUI();
+//
+//				const folderSky = gui.addFolder( 'Sky' );
+//				folderSky.add( parameters, 'elevation', -90, 90, 0.1 ).onChange( updateSun );
+//				folderSky.add( parameters, 'azimuth', 0, 360, 0.1 ).onChange( updateSun );
+//				folderSky.open();
+//
+//				const waterUniforms = water.material.uniforms;
+//
+//				const folderWater = gui.addFolder( 'Water' );
+//				folderWater.add( waterUniforms.distortionScale, 'value', 0, 8, 0.1 ).name( 'distortionScale' );
+//				folderWater.add( waterUniforms.size, 'value', 0.1, 10, 0.1 ).name( 'size' );
+//				folderWater.open();
 
 				//
 

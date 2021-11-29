@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>All Already: SF Performer</title>
+		<title>All Already: CH Performer</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<link type="text/css" rel="stylesheet" href="./three.js-master/examples/main.css">
@@ -59,11 +59,13 @@
 			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - webgl ocean
 		</div>
 -->
-        
+   
+        <script src="./moment.min.js"></script> 
+        <script src="./moment-timezone.min.js"></script> 
 
         <script> 
             if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-                window.location = "all-already-ch-mobile.html"; 
+                window.location = "./all-already-ch-mobile.html"; 
             }
         </script>
         
@@ -78,7 +80,7 @@
 			import { Water } from './three.js-master/examples/jsm/objects/Water.js'; //og
 			import { Sky } from '/three.js-master/examples/jsm/objects/Sky.js';
             
-
+            const scaleWater = 10000;
 
 			let container, stats;
 			let camera, scene, renderer;
@@ -86,26 +88,36 @@
             
             let camY = 10;
 
-            let eLmin = -50; 
-            let eLmax = 30;
+            let eLmin = -55; 
+            let eLmax = 28;
+            
+            let aZmin = 180;	
+            let aZmax = 360;
             
             let secMin =  1;
             let secMax = 86400;
             let secNoon = secMax/2;
             
-            let aZmin = 37.82;	
-            let aZmax = 322.40;
-            
+            //Performance Duration in Milliseconds
             const milliSecSf2Lus = 6733439971.2;
             const milliSecPass = 6733439971.2/2;
             
-            const scaleWater = 10000;
+            //Set Dates and Duration of Performance
+            //const startTime = new Date("December 1, 2021 12:00:00").getTime(); //1638388800000
+            const openingEvent = moment.utc('2021-12-01 12:00:00').utcOffset('-08:00');
+            const openingEventMS =  new Date(openingEvent).getTime();
+            const performanceStart = openingEventMS - milliSecPass;
+            const performanceEnd = openingEventMS + milliSecPass;
             
+            //Current Time
+            //Update: https://stackoverflow.com/questions/10087819/convert-date-to-another-timezone-in-javascript
+            const start = Date.now(); //The static Date.now() method returns the number of milliseconds elapsed since January 1, 1970 00:00:00 UTC
+            const startTime = new Date().getTime(); //1637543555185 - The getTime() method returns the number of milliseconds* since the Unix Epoch
             
-
-//            console.log(timeMinTot);
-            
-            
+            //Write Current, Start, & End time to Console in Milliseconds
+            console.log("Start Time: " + startTime);
+            console.log("Performance Start: " + performanceStart);
+            console.log("Performance End: " + performanceEnd);
             
             ///From misc_controls_pointerlock
                 import { PointerLockControls } from './three.js-master/examples/jsm/controls/PointerLockControls.js';
@@ -126,12 +138,6 @@
             ///End 
             
             const NEAR = 1e-6, FAR = 1e27; //from logarithmic depth buffer
-            
-            const start = Date.now();
-            //const startTime = new Date("December 1, 2021 12:00:00").getTime(); //1638388800000
-            //const startTime = new Date("December 1, 2021 12:00:00").getTime(); //1638388800000
-            const startTime = new Date().getTime(); //1637543555185
-            console.log('startTime = ' + startTime);
             
                               
 
@@ -160,7 +166,7 @@
                 camera = new THREE.PerspectiveCamera( 55, window.innerWidth / window.innerHeight, NEAR, 1000 );
 				camera.position.y = camY;
                 camera.position.x = 0;
-//                camera.position.z = 0;
+                //camera.position.z = performanceLoc;
 
     
                 
@@ -293,6 +299,7 @@
 				);
 
 				water.rotation.x = - Math.PI / 2;
+                //water.position.z = performanceLoc;  
 
 				scene.add( water );
 
@@ -300,6 +307,7 @@
 
 				const sky = new Sky({depthWrite: false});
 				sky.scale.setScalar( scaleWater );
+                //sky.position.z = performanceLoc;
 				scene.add( sky );
 
 				const skyUniforms = sky.material.uniforms;
@@ -361,7 +369,7 @@
                     
                     console.log("Current Sun Elevation = " + currentSunPos); // testing
                     console.log("Current Sun Az = " + currentSunAz); // testing
-                    console.log(timeSecTotPos); //testing
+//                    console.log(timeSecTotPos); //testing
                     
 					sun.setFromSphericalCoords( 1, phi, theta );
 
@@ -390,28 +398,16 @@
                 }, 10000);
                 // end update location
                 
-
-				const geometry = new THREE.BoxGeometry( 30, 30, 30 );
-				const material = new THREE.MeshStandardMaterial( { roughness: 0 } );
-
-				mesh = new THREE.Mesh( geometry, material );
-				scene.add( mesh );
-
+                //floating cube for testing
+//				const geometry = new THREE.BoxGeometry( 30, 30, 30 );
+//				const material = new THREE.MeshStandardMaterial( { roughness: 0 } );
+//				mesh = new THREE.Mesh( geometry, material );
+//				scene.add( mesh );
 				//
 
-//                //FROM webgl Shaders Ocean
-//				controls = new OrbitControls( camera, renderer.domElement );
-//				controls.maxPolarAngle = Math.PI * 0.495;
-//				controls.target.set( 0, 10, 0 );
-//				controls.minDistance = 40.0;
-//				controls.maxDistance = 200.0;
-//				controls.update();
-//                //END
-
-				//
-
-				stats = new Stats();
-				container.appendChild( stats.dom );
+                //  SHOW FPS
+//				stats = new Stats();
+//				container.appendChild( stats.dom );
 
 				// GUI
 
@@ -504,7 +500,7 @@
 				
                 prevTime = time2; //From Misc Controls Pointerlock
                 render();
-				stats.update();
+				//stats.update();
 
 			}
             
@@ -514,27 +510,31 @@
 
                 const time = performance.now() * 0.001;
 
-				mesh.position.y = Math.sin( time ) * 20 + 5;
-                mesh.position.x = 50;
-                mesh.position.z = -300;
-				mesh.rotation.x = time * 0.5;
-				mesh.rotation.z = time * 0.51;
+//				mesh.position.y = Math.sin( time ) * 20 + 5;
+//                mesh.position.x = 50;
+//                mesh.position.z = 0;
+//				mesh.rotation.x = time * 0.5;
+//				mesh.rotation.z = time * 0.51;
 
 				water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
                 
                
+                //Walking Performace from CH
+                
+                if(Date.now() >= performanceStart && Date.now() <= performanceEnd){
+                   
                 const millis = Date.now() - start;
                 const travel = millis * -.015;
                 const travelRound = round(travel, 2); // 1.01
 //               console.log(travelRound);
-                
-                
-                
                 camera.position.set(camera.position.x, camera.position.y, travelRound);
                 
+                };
+            
 				renderer.render( scene, camera );
 
 			}
+            
             
             function round(value, decimals) {
               return Number(Math.round(value+'e'+decimals)+'e-'+decimals);

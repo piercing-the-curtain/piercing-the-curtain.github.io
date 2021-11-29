@@ -4,7 +4,7 @@
 		<title>All Already: SF Performer</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<link type="text/css" rel="stylesheet" href="./three.js-master/examples/main.css"> <!--update-->
+		<link type="text/css" rel="stylesheet" href="./three.js-master/examples/main.css"> 
 	</head>
 	<body>
 
@@ -19,6 +19,8 @@
 <!--        <script src="./three.js-master/build/three.min.js"></script> update-->
         
         <script src="./camera-controls-dev/dist/camera-controls.js"></script> 
+        <script src="./moment.min.js"></script> 
+        <script src="./moment-timezone.min.js"></script> 
 
 		<script type="module">
 
@@ -41,25 +43,35 @@
             let eLmin = -50; 
             let eLmax = 30;
             
-            let aZmin = 37.82;	
-            let aZmax = 322.40;
+            let aZmin = 0;	
+            let aZmax = 180;
             
             let secMin =  1;
             let secMax = 86400;
             let secNoon = secMax/2;
             
+            //Performance Duration in Milliseconds
             const milliSecSf2Lus = 6733439971.2;
             const milliSecPass = 6733439971.2/2;
             
-            const scaleWater = 10000;
-            const NEAR = .01, FAR = scaleWater; //from logarithmic depth buffer
+            //Set Dates and Duration of Performance
+            //const startTime = new Date("December 1, 2021 12:00:00").getTime(); //1638388800000
+            const openingEvent = moment.utc('2021-12-01 12:00:00').utcOffset('-08:00');
+            const openingEventMS =  new Date(openingEvent).getTime();
+            const performanceStart = openingEventMS - milliSecPass;
+            const performanceEnd = openingEventMS + milliSecPass;
             
-            
+            //Current Time
             const start = Date.now(); //The static Date.now() method returns the number of milliseconds elapsed since January 1, 1970 00:00:00 UTC
             const startTime = new Date().getTime(); //1637543555185 - The getTime() method returns the number of milliseconds* since the Unix Epoch
-            //const startTime = new Date("December 1, 2021 12:00:00").getTime(); //1638388800000
-            //const startTime = new Date("December 1, 2021 12:00:00").getTime(); //1638388800000
-            console.log('startTime = ' + startTime);
+            
+           //Write Current, Start, & End time to Console in Milliseconds
+            console.log("Start Time: " + startTime);
+            console.log("Performance Start: " + performanceStart);
+            console.log("Performance End: " + performanceEnd);
+            
+            const scaleWater = 10000;
+            const NEAR = .01, FAR = scaleWater; //from logarithmic depth buffer
 
 			init();
 			animate();
@@ -85,7 +97,7 @@
 				//camera.position.set( 30, 30, 100 );
                 camera.position.y = camY;
                 camera.position.x = 0;
-                camera.position.z = 0;
+                //camera.position.z = performanceLoc;
                 
                 
                 //Sun
@@ -115,6 +127,7 @@
 				);
 
 				water.rotation.x = - Math.PI / 2;
+                //water.position.z = performanceLoc;
                 
 				scene.add( water );
 
@@ -122,6 +135,7 @@
 
 				const sky = new Sky();
 				sky.scale.setScalar( scaleWater );
+                //sky.position.z = performanceLoc;
 				scene.add( sky );
 
 				const skyUniforms = sky.material.uniforms;
@@ -151,7 +165,6 @@
                     var timeSecTot = timeH2S + timeM2S + timeSec; //current time in minutes since midnight
                     var timeSecTotPos;
                     
-                    
                     //If before noon add, if after noon subtract
                     if (timeSecTot > secNoon ){
                        timeSecTotPos = (secNoon) + (secNoon) - timeSecTot; 
@@ -180,9 +193,9 @@
                     var phi = THREE.MathUtils.degToRad(90 - currentSunPos);
 					var theta = THREE.MathUtils.degToRad(currentSunAz);
                     
-                    console.log("Current Sun Elevation = " + currentSunPos); // testing
-                    console.log("Current Sun Az = " + currentSunAz); // testing
-                    console.log(timeSecTotPos); //testing
+                    //console.log("Current Sun Elevation = " + currentSunPos); // testing
+                    //console.log("Current Sun Az = " + currentSunAz); // testing
+                    //console.log(timeSecTotPos); //testing
                     
 					sun.setFromSphericalCoords( 1, phi, theta );
 
@@ -209,17 +222,16 @@
                 // end update location
 
 
+                //floating cube for testing
+//				const geometry = new THREE.BoxGeometry( 30, 30, 30 );
+//				const material = new THREE.MeshStandardMaterial( { roughness: 0 } );
+//				mesh = new THREE.Mesh( geometry, material );
+//				scene.add( mesh );
 				//
 
-				const geometry = new THREE.BoxGeometry( 30, 30, 30 );
-				const material = new THREE.MeshStandardMaterial( { roughness: 0 } );
-
-				mesh = new THREE.Mesh( geometry, material );
-				scene.add( mesh );
-
-
-				stats = new Stats();
-				container.appendChild( stats.dom );
+                //  SHOW FPS
+//				stats = new Stats();
+//				container.appendChild( stats.dom );
 
 //				// GUI
 //
@@ -258,28 +270,32 @@
                 requestAnimationFrame( animate );
                 //controls.update(); // From Orbit Controls Example only required if controls.enableDamping = true, or if controls.autoRotate = true
 				render();
-				stats.update();
+				//stats.update();
 
 			}
 
 			function render() {
 
 				const time = performance.now() * 0.001;
-                mesh.position.x = -50;
-                mesh.position.z = -300;
-				mesh.position.y = Math.sin( time ) * 20 + 5;
-				mesh.rotation.x = time * 0.5;
-				mesh.rotation.z = time * 0.51;
+//              mesh.position.x = 50;
+//              mesh.position.z = -0;
+//				mesh.position.y = Math.sin( time ) * 20 + 5;
+//				mesh.rotation.x = time * 0.5;
+//				mesh.rotation.z = time * 0.51;
 
 				water.material.uniforms[  'time' ].value += 1.0 / 60.0;
                 
-                const millis = Date.now() - startTime;
+                //Walking Performace from CH
+                
+                if(Date.now() >= performanceStart && Date.now() <= performanceEnd){
+                   
+                const millis = Date.now() - start;
                 const travel = millis * -.015;
                 const travelRound = round(travel, 2); // 1.01
 //               console.log(travelRound);
-                
-                
                 camera.position.set(camera.position.x, camera.position.y, travelRound);
+                
+                };
 
 				renderer.render( scene, camera );
 
